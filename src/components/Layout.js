@@ -5,7 +5,7 @@ const Layout = ({ children }) => {
   return (
     <div className="app-container">
       <nav className="sidebar">
-        <h1>Gestão de Fábrica</h1>
+        <h1>Gestão De Cartonagem</h1>
         <ul>
           <li>
             <Link to="/">Dashboard</Link>

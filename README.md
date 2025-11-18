@@ -143,11 +143,10 @@ Não há persistência de dados - ao recarregar a página, as informações adic
 
 ### Próximas Etapas
 
-- [ ] Implementação do back-end (API REST)
-- [ ] Conexão com banco de dados
-- [ ] Persistência real dos dados
-- [ ] Autenticação de usuários
-- [ ] Relatórios e dashboards analíticos
+- [x] Implementação do back-end (API REST)
+- [x] Conexão com banco de dados
+- [x] Persistência real dos dados
+- [x] Autenticação de usuários
 
 ---
 
@@ -190,6 +189,4 @@ Este projeto é de propriedade acadêmica da FATEC Franca - Curso de Desenvolvim
 
 Para dúvidas ou sugestões, entre em contato com a equipe do Grupo 04.
 
-
 **FATEC Franca - 2025**
-

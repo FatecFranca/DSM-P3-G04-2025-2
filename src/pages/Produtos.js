@@ -1,34 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import FichaTecnica from '../components/FichaTecnica';
 
+const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 const Produtos = () => {
   const [produtos, setProdutos] = useState([]);
   const [selectedProdutoId, setSelectedProdutoId] = useState(null);
 
-  // Mock de produtos
   useEffect(() => {
-    const produtosMock = [
-      {
-        id_produto: 'P-001',
-        id_categoria: 'CAT-001',
-        nome: 'Mesa de Aço',
-        preco_unitario: 350.00
-      },
-      {
-        id_produto: 'P-002',
-        id_categoria: 'CAT-002',
-        nome: 'Cadeira Plástica',
-        preco_unitario: 120.00
-      },
-      {
-        id_produto: 'P-003',
-        id_categoria: 'CAT-001',
-        nome: 'Armário Industrial',
-        preco_unitario: 890.00
-      }
-    ];
-    setProdutos(produtosMock);
+    fetchProdutos();
   }, []);
+
+  const fetchProdutos = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/produtos`);
+      if (!res.ok) throw new Error('Erro ao buscar produtos');
+      const data = await res.json();
+      setProdutos(data);
+    } catch (err) {
+      console.error('Erro:', err);
+    }
+  };
 
   const handleVerFicha = (id_produto) => {
     setSelectedProdutoId(id_produto);

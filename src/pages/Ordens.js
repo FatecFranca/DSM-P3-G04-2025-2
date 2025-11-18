@@ -1,56 +1,57 @@
 import React, { useState, useEffect } from 'react';
 
+const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 const Ordens = () => {
   const [ordens, setOrdens] = useState([]);
   const [produtos, setProdutos] = useState([]);
   const [clientes, setClientes] = useState([]);
   const [formData, setFormData] = useState({
-    id_produto: '',
-    id_cliente: '',
-    data_inicio: '',
-    status: 'Pendente',
-    quantidade_planejada: ''
+    produto: '',
+    cliente: '',
+    dataInicio: '',
+    status: 'pendente',
+    quantidade: ''
   });
 
-  // Mock de dados
   useEffect(() => {
-    const produtosMock = [
-      { id_produto: 'P-001', nome: 'Mesa de Aço' },
-      { id_produto: 'P-002', nome: 'Cadeira Plástica' },
-      { id_produto: 'P-003', nome: 'Armário Industrial' }
-    ];
-    setProdutos(produtosMock);
-
-    const clientesMock = [
-      { id_cliente: 'C-001', nome: 'João Silva Ltda' },
-      { id_cliente: 'C-002', nome: 'Maria Comércio S.A.' }
-    ];
-    setClientes(clientesMock);
-
-    const ordensMock = [
-      {
-        id_ordem: 'OP-001',
-        id_produto: 'P-001',
-        nome_produto: 'Mesa de Aço',
-        id_cliente: 'C-001',
-        nome_cliente: 'João Silva Ltda',
-        data_inicio: '2025-10-20',
-        status: 'Em Produção',
-        quantidade_planejada: 50
-      },
-      {
-        id_ordem: 'OP-002',
-        id_produto: 'P-002',
-        nome_produto: 'Cadeira Plástica',
-        id_cliente: '',
-        nome_cliente: 'Para Estoque',
-        data_inicio: '2025-10-25',
-        status: 'Pendente',
-        quantidade_planejada: 100
-      }
-    ];
-    setOrdens(ordensMock);
+    fetchProdutos();
+    fetchClientes();
+    fetchOrdens();
   }, []);
+
+  const fetchProdutos = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/produtos`);
+      if (!res.ok) throw new Error('Erro ao buscar produtos');
+      const data = await res.json();
+      setProdutos(data);
+    } catch (err) {
+      console.error('Erro:', err);
+    }
+  };
+
+  const fetchClientes = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/clientes`);
+      if (!res.ok) throw new Error('Erro ao buscar clientes');
+      const data = await res.json();
+      setClientes(data);
+    } catch (err) {
+      console.error('Erro:', err);
+    }
+  };
+
+  const fetchOrdens = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/ordens-producao`);
+      if (!res.ok) throw new Error('Erro ao buscar ordens');
+      const data = await res.json();
+      setOrdens(data);
+    } catch (err) {
+      console.error('Erro:', err);
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({
@@ -59,33 +60,40 @@ const Ordens = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.id_produto || !formData.data_inicio || !formData.quantidade_planejada) {
+    if (!formData.produto || !formData.dataInicio || !formData.quantidade) {
       alert('Produto, Data de Início e Quantidade são obrigatórios!');
       return;
     }
 
-    const produtoSelecionado = produtos.find(p => p.id_produto === formData.id_produto);
-    const clienteSelecionado = clientes.find(c => c.id_cliente === formData.id_cliente);
-
-    const novaOrdem = {
-      id_ordem: `OP-${String(ordens.length + 1).padStart(3, '0')}`,
-      ...formData,
-      nome_produto: produtoSelecionado.nome,
-      nome_cliente: formData.id_cliente ? clienteSelecionado.nome : 'Para Estoque',
-      quantidade_planejada: parseInt(formData.quantidade_planejada)
-    };
-
-    setOrdens([...ordens, novaOrdem]);
-    setFormData({
-      id_produto: '',
-      id_cliente: '',
-      data_inicio: '',
-      status: 'Pendente',
-      quantidade_planejada: ''
-    });
-    alert('Ordem de Produção criada com sucesso!');
+    try {
+      const res = await fetch(`${API_BASE}/api/ordens-producao`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          produto: formData.produto,
+          quantidade: parseInt(formData.quantidade),
+          dataInicio: new Date(formData.dataInicio).toISOString(),
+          status: formData.status,
+          pedidoRelacionado: formData.cliente || null
+        })
+      });
+      if (!res.ok) throw new Error('Erro ao criar ordem');
+      
+      await fetchOrdens();
+      setFormData({
+        produto: '',
+        cliente: '',
+        dataInicio: '',
+        status: 'pendente',
+        quantidade: ''
+      });
+      alert('Ordem de Produção criada com sucesso!');
+    } catch (err) {
+      console.error('Erro:', err);
+      alert('Falha ao criar ordem');
+    }
   };
 
   return (
@@ -97,17 +105,17 @@ const Ordens = () => {
           <h3>Criar Nova Ordem de Produção</h3>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label htmlFor="id_produto">Produto *</label>
+              <label htmlFor="produto">Produto *</label>
               <select
-                id="id_produto"
-                name="id_produto"
-                value={formData.id_produto}
+                id="produto"
+                name="produto"
+                value={formData.produto}
                 onChange={handleChange}
                 required
               >
                 <option value="">-- Selecione o Produto --</option>
                 {produtos.map((produto) => (
-                  <option key={produto.id_produto} value={produto.id_produto}>
+                  <option key={produto._id || produto.id_produto} value={produto._id || produto.id_produto}>
                     {produto.nome}
                   </option>
                 ))}
@@ -115,16 +123,16 @@ const Ordens = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="id_cliente">Cliente (Opcional - Deixe em branco para estoque)</label>
+              <label htmlFor="cliente">Cliente (Opcional - Deixe em branco para estoque)</label>
               <select
-                id="id_cliente"
-                name="id_cliente"
-                value={formData.id_cliente}
+                id="cliente"
+                name="cliente"
+                value={formData.cliente}
                 onChange={handleChange}
               >
                 <option value="">-- Para Estoque --</option>
                 {clientes.map((cliente) => (
-                  <option key={cliente.id_cliente} value={cliente.id_cliente}>
+                  <option key={cliente._id || cliente.id_cliente} value={cliente._id || cliente.id_cliente}>
                     {cliente.nome}
                   </option>
                 ))}
@@ -132,12 +140,12 @@ const Ordens = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="quantidade_planejada">Quantidade Planejada *</label>
+              <label htmlFor="quantidade">Quantidade Planejada *</label>
               <input
                 type="number"
-                id="quantidade_planejada"
-                name="quantidade_planejada"
-                value={formData.quantidade_planejada}
+                id="quantidade"
+                name="quantidade"
+                value={formData.quantidade}
                 onChange={handleChange}
                 min="1"
                 required
@@ -145,12 +153,12 @@ const Ordens = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="data_inicio">Data de Início *</label>
+              <label htmlFor="dataInicio">Data de Início *</label>
               <input
                 type="date"
-                id="data_inicio"
-                name="data_inicio"
-                value={formData.data_inicio}
+                id="dataInicio"
+                name="dataInicio"
+                value={formData.dataInicio}
                 onChange={handleChange}
                 required
               />
@@ -165,10 +173,9 @@ const Ordens = () => {
                 onChange={handleChange}
                 required
               >
-                <option value="Pendente">Pendente</option>
-                <option value="Em Produção">Em Produção</option>
-                <option value="Concluída">Concluída</option>
-                <option value="Cancelada">Cancelada</option>
+                <option value="pendente">Pendente</option>
+                <option value="em_producao">Em Produção</option>
+                <option value="finalizado">Finalizado</option>
               </select>
             </div>
 
@@ -184,7 +191,6 @@ const Ordens = () => {
             <tr>
               <th>ID</th>
               <th>Produto</th>
-              <th>Cliente</th>
               <th>Quantidade</th>
               <th>Data Início</th>
               <th>Status</th>
@@ -192,12 +198,11 @@ const Ordens = () => {
           </thead>
           <tbody>
             {ordens.map((ordem) => (
-              <tr key={ordem.id_ordem}>
-                <td>{ordem.id_ordem}</td>
-                <td>{ordem.nome_produto}</td>
-                <td>{ordem.nome_cliente}</td>
-                <td>{ordem.quantidade_planejada}</td>
-                <td>{new Date(ordem.data_inicio).toLocaleDateString('pt-BR')}</td>
+              <tr key={ordem._id || ordem.id}>
+                <td>{ordem._id ? ordem._id.substring(0, 8) : ordem.id}</td>
+                <td>{ordem.produto?.nome || 'N/A'}</td>
+                <td>{ordem.quantidade}</td>
+                <td>{new Date(ordem.dataInicio).toLocaleDateString('pt-BR')}</td>
                 <td>{ordem.status}</td>
               </tr>
             ))}

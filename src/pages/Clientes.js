@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
+const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 const Clientes = () => {
   const [clientes, setClientes] = useState([]);
   const [formData, setFormData] = useState({
@@ -8,24 +10,20 @@ const Clientes = () => {
     contato: ''
   });
 
-  // Mock de dados iniciais
   useEffect(() => {
-    const clientesMock = [
-      {
-        id_cliente: 'C-001',
-        nome: 'João Silva Ltda',
-        cpf_cnpj: '12.345.678/0001-90',
-        contato: '(16) 3333-4444'
-      },
-      {
-        id_cliente: 'C-002',
-        nome: 'Maria Comércio S.A.',
-        cpf_cnpj: '98.765.432/0001-10',
-        contato: '(16) 3555-6666'
-      }
-    ];
-    setClientes(clientesMock);
+    fetchClientes();
   }, []);
+
+  const fetchClientes = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/clientes`);
+      if (!res.ok) throw new Error('Erro ao buscar clientes');
+      const data = await res.json();
+      setClientes(data);
+    } catch (err) {
+      console.error('Erro:', err);
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({
@@ -34,21 +32,41 @@ const Clientes = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.nome) {
       alert('Nome é obrigatório!');
       return;
     }
     
-    const novoCliente = {
-      id_cliente: `C-${String(clientes.length + 1).padStart(3, '0')}`,
-      ...formData
-    };
-    
-    setClientes([...clientes, novoCliente]);
-    setFormData({ nome: '', cpf_cnpj: '', contato: '' });
-    alert('Cliente cadastrado com sucesso!');
+    try {
+      const res = await fetch(`${API_BASE}/api/clientes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      if (!res.ok) throw new Error('Erro ao criar cliente');
+      
+      await fetchClientes();
+      setFormData({ nome: '', cpf_cnpj: '', contato: '' });
+      alert('Cliente cadastrado com sucesso!');
+    } catch (err) {
+      console.error('Erro:', err);
+      alert('Falha ao cadastrar cliente');
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Tem certeza que deseja remover?')) return;
+    try {
+      const res = await fetch(`${API_BASE}/api/clientes/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Erro ao remover');
+      await fetchClientes();
+      alert('Cliente removido com sucesso!');
+    } catch (err) {
+      console.error('Erro:', err);
+      alert('Falha ao remover cliente');
+    }
   };
 
   return (
@@ -100,6 +118,7 @@ const Clientes = () => {
 
       <div className="section">
         <h3>Lista de Clientes</h3>
+        {clientes.length === 0 && <p>Nenhum cliente cadastrado.</p>}
         <table>
           <thead>
             <tr>
@@ -107,6 +126,7 @@ const Clientes = () => {
               <th>Nome</th>
               <th>CPF/CNPJ</th>
               <th>Contato</th>
+              <th>Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -116,6 +136,11 @@ const Clientes = () => {
                 <td>{cliente.nome}</td>
                 <td>{cliente.cpf_cnpj || '-'}</td>
                 <td>{cliente.contato || '-'}</td>
+                <td>
+                  <button onClick={() => handleDelete(cliente.id_cliente)} style={{ color: 'red' }}>
+                    Remover
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
