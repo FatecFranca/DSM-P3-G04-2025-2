@@ -23,6 +23,7 @@ Certifique-se de ter instalado em sua máquina:
 - [Node.js](https://nodejs.org/) (versão 14 ou superior)
 - [npm](https://www.npmjs.com/) (geralmente vem com Node.js)
 - Um navegador web moderno (Chrome, Firefox, Edge, etc.)
+- MongoDB Server (Versão Community ou Enterprise)
 
 ### 🔧 Instalação
 
@@ -190,3 +191,7 @@ Este projeto é de propriedade acadêmica da FATEC Franca - Curso de Desenvolvim
 Para dúvidas ou sugestões, entre em contato com a equipe do Grupo 04.
 
 **FATEC Franca - 2025**
+
+
+
+TESTANDO AS FUNCINALIDADE DOS
