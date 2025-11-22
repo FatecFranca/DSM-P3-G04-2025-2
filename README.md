@@ -1,10 +1,10 @@
-# DSM-P3-G04-2025-2
+# 📦 Sistema de Gestão de Fábrica de Cartonagem
 
 ## 📋 Sobre o Projeto
 
 Repositório do **GRUPO 04** do Projeto Interdisciplinar do 3º semestre DSM 2025/2.
 
-**Sistema de Gerenciamento de Fábrica** - Aplicação web para gerenciar processos de produção, incluindo cadastro de clientes, matérias-primas, produtos finais e ordens de produção.
+**Sistema de Gerenciamento de Fábrica de Cartonagem** - Aplicação full-stack para gerenciar processos de produção de embalagens de papelão, incluindo cadastro de clientes, controle de matérias-primas, produtos finais, fichas técnicas e ordens de produção.
 
 ### 👥 Equipe
 
@@ -22,41 +22,63 @@ Certifique-se de ter instalado em sua máquina:
 
 - [Node.js](https://nodejs.org/) (versão 14 ou superior)
 - [npm](https://www.npmjs.com/) (geralmente vem com Node.js)
+- [MongoDB](https://www.mongodb.com/try/download/community) ou acesso ao MongoDB Atlas
 - Um navegador web moderno (Chrome, Firefox, Edge, etc.)
-- MongoDB Server (Versão Community ou Enterprise)
 
 ### 🔧 Instalação
 
 1. **Clone o repositório:**
    ```bash
    git clone https://github.com/FatecFranca/DSM-P3-G04-2025-2.git
-   ```
-
-2. **Navegue até o diretório do projeto:**
-   ```bash
    cd DSM-P3-G04-2025-2
    ```
 
-3. **Instale as dependências:**
+2. **Instale as dependências do frontend:**
    ```bash
    npm install
    ```
 
+3. **Instale as dependências do backend:**
+   ```bash
+   cd backend
+   npm install
+   cd ..
+   ```
+
+4. **Configure as variáveis de ambiente:**
+   
+   Crie ou edite o arquivo `backend/.env`:
+   ```env
+   MONGODB_URI=mongodb+srv://seu_usuario:sua_senha@cluster.mongodb.net/gestao_fabrica
+   PORT=5000
+   ```
+
 ### ▶️ Executando a Aplicação
 
-Para iniciar o servidor de desenvolvimento:
+**Terminal 1 - Backend:**
+```bash
+cd backend
+npm start
+```
+Servidor rodando em: http://localhost:5000
 
+**Terminal 2 - Frontend:**
 ```bash
 npm start
 ```
+Aplicação abrirá automaticamente em: http://localhost:3000
 
-A aplicação será aberta automaticamente no navegador em:
-- **Local:** [http://localhost:3000](http://localhost:3000)
+### 🌱 Populando o Banco de Dados (Seed)
+
+Para popular o banco com dados iniciais:
+```bash
+cd backend
+npm run seed
+```
 
 ### 📦 Build para Produção
 
 Para criar uma versão otimizada para produção:
-
 ```bash
 npm run build
 ```
@@ -69,23 +91,50 @@ Os arquivos otimizados serão gerados na pasta `build/`.
 
 ```
 DSM-P3-G04-2025-2/
+├── backend/                    # Servidor Node.js + Express
+│   ├── config/
+│   │   └── db.js              # Configuração MongoDB
+│   ├── controllers/           # Lógica de negócio
+│   │   ├── clientesController.js
+│   │   ├── materiasController.js
+│   │   ├── produtosController.js
+│   │   ├── ordemProducaoController.js
+│   │   └── notificacoesController.js
+│   ├── models/                # Schemas Mongoose
+│   │   ├── Cliente.js
+│   │   ├── MateriaPrima.js
+│   │   ├── Produto.js
+│   │   ├── OrdemProducao.js
+│   │   ├── Pedido.js
+│   │   └── Notificacao.js
+│   ├── routes/                # Rotas da API
+│   │   ├── clientes.js
+│   │   ├── materias.js
+│   │   ├── produtos.js
+│   │   ├── ordemProducaoRoutes.js
+│   │   └── notificacoes.js
+│   ├── seed/
+│   │   └── seed.js            # Dados iniciais
+│   ├── .env                   # Variáveis de ambiente
+│   ├── server.js              # Entry point do backend
+│   └── package.json
+├── src/                       # Frontend React
+│   ├── components/
+│   │   ├── Layout.js          # Layout com sidebar
+│   │   └── FichaTecnica.js    # Gestão de composição
+│   ├── pages/
+│   │   ├── Dashboard.js       # Página inicial
+│   │   ├── Clientes.js        # CRUD Clientes
+│   │   ├── MateriasPrimas.js  # CRUD Matérias-primas
+│   │   ├── Produtos.js        # CRUD Produtos + Fichas
+│   │   └── Ordens.js          # Ordens de Produção
+│   ├── App.css
+│   ├── App.js                 # Rotas React Router
+│   └── index.js
 ├── public/
-│   └── index.html          # HTML principal
-├── src/
-│   ├── components/         # Componentes reutilizáveis
-│   │   ├── Layout.js       # Layout principal com sidebar
-│   │   └── FichaTecnica.js # Gerenciamento de ficha técnica
-│   ├── pages/              # Páginas da aplicação
-│   │   ├── Dashboard.js    # Página inicial
-│   │   ├── Clientes.js     # Gerenciamento de clientes
-│   │   ├── MateriasPrimas.js # Gerenciamento de matérias-primas
-│   │   ├── Produtos.js     # Gerenciamento de produtos
-│   │   └── Ordens.js       # Gerenciamento de ordens de produção
-│   ├── App.css             # Estilos globais
-│   ├── App.js              # Configuração de rotas
-│   └── index.js            # Ponto de entrada da aplicação
-├── package.json            # Dependências e scripts
-└── README.md               # Este arquivo
+│   └── index.html
+├── package.json               # Dependências frontend
+└── README.md
 ```
 
 ---
@@ -94,89 +143,194 @@ DSM-P3-G04-2025-2/
 
 ### ✅ Módulos Implementados
 
-1. **Dashboard**
+#### 1. **Dashboard**
    - Página inicial com boas-vindas ao sistema
+   - Visão geral do sistema de gestão
 
-2. **Gerenciamento de Clientes**
-   - Cadastro de clientes (nome obrigatório)
-   - Listagem de clientes cadastrados
-   - Campos opcionais: CPF/CNPJ e contato
+#### 2. **Gerenciamento de Clientes**
+   - ✅ Listar todos os clientes
+   - ✅ Cadastrar novo cliente
+   - ✅ Editar dados do cliente
+   - ✅ Excluir cliente
+   - Campos: nome, CPF/CNPJ, contato
 
-3. **Gerenciamento de Matérias-Primas**
-   - Cadastro de matérias-primas
-   - Campos: nome, descrição e unidade de medida
-   - Listagem de matérias cadastradas
+#### 3. **Gerenciamento de Matérias-Primas**
+   - ✅ Listar matérias-primas
+   - ✅ Cadastrar matéria-prima
+   - ✅ Editar matéria-prima
+   - ✅ Excluir matéria-prima
+   - Campos: nome, descrição, unidade de medida
+   - **Matérias disponíveis:**
+     - Papelão Ondulado Simples/Duplo
+     - Papel Kraft
+     - Cola Branca Industrial
+     - Tinta Flexográfica
+     - Fita Adesiva Kraft
+     - Grampos Metálicos
+     - Verniz Protetor
 
-4. **Gerenciamento de Produtos Finais**
-   - Listagem de produtos
-   - Visualização de ficha técnica por produto
-   - Associação de matérias-primas aos produtos
+#### 4. **Gerenciamento de Produtos Finais**
+   - ✅ Listar produtos de cartonagem
+   - ✅ Cadastrar novo produto
+   - ✅ Editar produto existente
+   - ✅ Excluir produto
+   - ✅ Visualizar ficha técnica completa
+   - Campos: ID automático, nome, descrição, preço
+   - **Produtos exemplo:**
+     - Caixas de Papelão (Pequena, Média, Grande)
+     - Embalagens Personalizadas
+     - Displays de Papelão
 
-5. **Ficha Técnica**
-   - Composição detalhada de cada produto
-   - Adição de matérias-primas com quantidades
-   - Visualização de ingredientes necessários
+#### 5. **Ficha Técnica de Produtos**
+   - ✅ Visualizar composição detalhada
+   - ✅ Adicionar matéria-prima à composição
+   - ✅ Editar quantidade de matéria-prima
+   - ✅ Remover item da composição
+   - Interface em tabela organizada
+   - Controle de quantidade por unidade de medida
 
-6. **Gerenciamento de Ordens de Produção**
+#### 6. **Gerenciamento de Ordens de Produção**
    - Criação de ordens de produção
-   - Associação opcional com clientes
-   - **Regra de negócio:** Ordens sem cliente = reposição de estoque
-   - Controle de status e quantidades planejadas
+   - Associação com produtos e clientes
+   - Controle de matérias-primas utilizadas
+   - Rastreamento de status (pendente, em produção, finalizado)
+   - Observações e notas de produção
 
 ---
 
 ## 🛠️ Tecnologias Utilizadas
 
-- **React** (v18.2.0) - Biblioteca JavaScript para interfaces
-- **React Router DOM** (v6.20.0) - Navegação entre páginas
-- **CSS3** - Estilização minimalista
-- **React Hooks** - useState, useEffect para gerenciamento de estado
+### Frontend
+- **React** (v18.2.0) - Biblioteca para interfaces
+- **React Router DOM** (v6.20.0) - Navegação SPA
+- **CSS3** - Estilização responsiva
+- **Fetch API** - Requisições HTTP
+
+### Backend
+- **Node.js** - Runtime JavaScript
+- **Express** (v4.18.2) - Framework web
+- **MongoDB** - Banco de dados NoSQL
+- **Mongoose** (v7.5.0) - ODM para MongoDB
+- **CORS** - Controle de requisições cross-origin
+- **dotenv** - Gerenciamento de variáveis de ambiente
+
+### DevTools
+- **Nodemon** - Hot reload no desenvolvimento
+- **React Scripts** - Build e desenvolvimento
+
+---
+
+## 📡 API Endpoints
+
+### Produtos
+- `GET /api/produtos` - Listar todos
+- `GET /api/produtos/:id` - Buscar por ID
+- `POST /api/produtos` - Criar novo
+- `PUT /api/produtos/:id` - Atualizar
+- `DELETE /api/produtos/:id` - Excluir
+
+### Clientes
+- `GET /api/clientes` - Listar todos
+- `GET /api/clientes/:id` - Buscar por ID
+- `POST /api/clientes` - Criar novo
+- `PUT /api/clientes/:id` - Atualizar
+- `DELETE /api/clientes/:id` - Excluir
+
+### Matérias-Primas
+- `GET /api/materias` - Listar todas
+- `GET /api/materias/:id` - Buscar por ID
+- `POST /api/materias` - Criar nova
+- `PUT /api/materias/:id` - Atualizar
+- `DELETE /api/materias/:id` - Excluir
+
+### Ordens de Produção
+- `GET /api/ordens-producao` - Listar todas
+- `GET /api/ordens-producao/:id` - Buscar por ID
+- `POST /api/ordens-producao` - Criar nova
+- `PUT /api/ordens-producao/:id` - Atualizar
+- `DELETE /api/ordens-producao/:id` - Excluir
+
+### Notificações
+- `GET /api/notificacoes` - Listar notificações
 
 ---
 
 ## 📝 Observações Importantes
 
-### Dados Mockados
+### Persistência de Dados
 
-⚠️ **Atenção:** Atualmente, todos os dados são **mockados** (simulados) diretamente nos componentes React. 
+✅ **Sistema completo com persistência:** Todos os dados são armazenados no MongoDB Atlas/Local e persistem entre sessões.
 
-Não há persistência de dados - ao recarregar a página, as informações adicionadas serão perdidas.
+### Regras de Negócio
 
-### Próximas Etapas
-
-- [x] Implementação do back-end (API REST)
-- [x] Conexão com banco de dados
-- [x] Persistência real dos dados
-- [x] Autenticação de usuários
+- IDs de produtos são gerados automaticamente no formato `P-001`, `P-002`, etc.
+- Fichas técnicas permitem múltiplas matérias-primas por produto
+- Unidades de medida variam conforme o tipo de matéria-prima (m², kg, litro, metro, unidade)
+- Ordens de produção rastreiam o uso de matérias-primas
 
 ---
 
 ## 🐛 Solução de Problemas
 
-### Porta 3000 já está em uso
+### Erro de conexão com MongoDB
 
-Se aparecer erro de porta em uso:
+Verifique se:
+1. O MongoDB está rodando localmente OU
+2. As credenciais do MongoDB Atlas estão corretas no `.env`
+3. O IP da sua máquina está liberado no MongoDB Atlas (Network Access)
+
+### Porta 3000 ou 5000 já está em uso
 
 **Windows (PowerShell):**
 ```powershell
+# Para porta 3000 (frontend)
 netstat -ano | findstr :3000
+taskkill /PID <número_do_processo> /F
+
+# Para porta 5000 (backend)
+netstat -ano | findstr :5000
 taskkill /PID <número_do_processo> /F
 ```
 
 **Linux/Mac:**
 ```bash
+# Para porta 3000
 lsof -i :3000
+kill -9 <PID>
+
+# Para porta 5000
+lsof -i :5000
 kill -9 <PID>
 ```
 
 ### Erro ao instalar dependências
 
-Tente limpar o cache do npm:
-
+Limpe o cache e reinstale:
 ```bash
 npm cache clean --force
+rm -rf node_modules package-lock.json
 npm install
 ```
+
+### CORS Error
+
+Certifique-se de que:
+- O backend está rodando em `http://localhost:5000`
+- O frontend está configurado para apontar para a URL correta
+- CORS está habilitado no `backend/server.js`
+
+---
+
+## 🔄 Próximas Melhorias
+
+- [ ] Autenticação e autorização de usuários
+- [ ] Relatórios de produção
+- [ ] Dashboard com gráficos e métricas
+- [ ] Controle de estoque de matérias-primas
+- [ ] Notificações em tempo real
+- [ ] Histórico de alterações
+- [ ] Export de dados (PDF/Excel)
+- [ ] Integração com sistemas de pagamento
 
 ---
 
@@ -184,14 +338,21 @@ npm install
 
 Este projeto é de propriedade acadêmica da FATEC Franca - Curso de Desenvolvimento de Software Multiplataforma.
 
+**Uso exclusivo para fins educacionais.**
+
 ---
 
 ## 📞 Contato
 
 Para dúvidas ou sugestões, entre em contato com a equipe do Grupo 04.
 
+### Instituição
 **FATEC Franca - 2025**
+Faculdade de Tecnologia de Franca
+Curso: Desenvolvimento de Software Multiplataforma
 
+---
 
+## 🙏 Agradecimentos
 
-TESTANDO AS FUNCINALIDADE DOS
+Agradecemos aos professores e orientadores do curso DSM pela orientação e suporte durante o desenvolvimento deste projeto interdisciplinar.

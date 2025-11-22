@@ -7,28 +7,51 @@ const FichaTecnica = ({ id_produto }) => {
     id_materia_prima: '',
     quantidade_necessaria: ''
   });
+  const [editingIndex, setEditingIndex] = useState(null);
 
-  // Mock de matérias-primas disponíveis
+  // Mock de matérias-primas disponíveis - Fábrica de Cartonagem
   useEffect(() => {
     const materiasMock = [
-      { id_materia: 'M-001', nome: 'Aço Inoxidável', unidade_medida: 'kg' },
-      { id_materia: 'M-002', nome: 'Plástico ABS', unidade_medida: 'kg' },
-      { id_materia: 'M-003', nome: 'Tinta Epóxi', unidade_medida: 'litro' }
+      { id_materia: 'M-001', nome: 'Papelão Ondulado Simples', unidade_medida: 'm²' },
+      { id_materia: 'M-002', nome: 'Papelão Ondulado Duplo', unidade_medida: 'm²' },
+      { id_materia: 'M-003', nome: 'Papel Kraft', unidade_medida: 'kg' },
+      { id_materia: 'M-004', nome: 'Cola Branca Industrial', unidade_medida: 'kg' },
+      { id_materia: 'M-005', nome: 'Tinta Flexográfica', unidade_medida: 'litro' },
+      { id_materia: 'M-006', nome: 'Fita Adesiva Kraft', unidade_medida: 'metro' },
+      { id_materia: 'M-007', nome: 'Grampos Metálicos', unidade_medida: 'unidade' },
+      { id_materia: 'M-008', nome: 'Verniz Protetor', unidade_medida: 'litro' }
     ];
     setMateriasDisponiveis(materiasMock);
 
     // Mock de ficha técnica inicial (varia por produto)
     const fichaMock = {
       'P-001': [
-        { id_materia_prima: 'M-001', nome: 'Aço Inoxidável', quantidade_necessaria: 0.5, unidade: 'kg' },
-        { id_materia_prima: 'M-003', nome: 'Tinta Epóxi', quantidade_necessaria: 0.1, unidade: 'litro' }
+        { id_materia_prima: 'M-001', nome: 'Papelão Ondulado Simples', quantidade_necessaria: 0.12, unidade: 'm²' },
+        { id_materia_prima: 'M-004', nome: 'Cola Branca Industrial', quantidade_necessaria: 0.05, unidade: 'kg' },
+        { id_materia_prima: 'M-007', nome: 'Grampos Metálicos', quantidade_necessaria: 4, unidade: 'unidade' }
       ],
       'P-002': [
-        { id_materia_prima: 'M-002', nome: 'Plástico ABS', quantidade_necessaria: 1.0, unidade: 'kg' }
+        { id_materia_prima: 'M-002', nome: 'Papelão Ondulado Duplo', quantidade_necessaria: 0.35, unidade: 'm²' },
+        { id_materia_prima: 'M-004', nome: 'Cola Branca Industrial', quantidade_necessaria: 0.08, unidade: 'kg' },
+        { id_materia_prima: 'M-007', nome: 'Grampos Metálicos', quantidade_necessaria: 6, unidade: 'unidade' }
       ],
       'P-003': [
-        { id_materia_prima: 'M-001', nome: 'Aço Inoxidável', quantidade_necessaria: 2.0, unidade: 'kg' },
-        { id_materia_prima: 'M-002', nome: 'Plástico ABS', quantidade_necessaria: 0.5, unidade: 'kg' }
+        { id_materia_prima: 'M-002', nome: 'Papelão Ondulado Duplo', quantidade_necessaria: 0.8, unidade: 'm²' },
+        { id_materia_prima: 'M-004', nome: 'Cola Branca Industrial', quantidade_necessaria: 0.15, unidade: 'kg' },
+        { id_materia_prima: 'M-006', nome: 'Fita Adesiva Kraft', quantidade_necessaria: 1.5, unidade: 'metro' },
+        { id_materia_prima: 'M-007', nome: 'Grampos Metálicos', quantidade_necessaria: 8, unidade: 'unidade' }
+      ],
+      'P-004': [
+        { id_materia_prima: 'M-002', nome: 'Papelão Ondulado Duplo', quantidade_necessaria: 0.5, unidade: 'm²' },
+        { id_materia_prima: 'M-005', nome: 'Tinta Flexográfica', quantidade_necessaria: 0.2, unidade: 'litro' },
+        { id_materia_prima: 'M-004', nome: 'Cola Branca Industrial', quantidade_necessaria: 0.1, unidade: 'kg' },
+        { id_materia_prima: 'M-008', nome: 'Verniz Protetor', quantidade_necessaria: 0.1, unidade: 'litro' }
+      ],
+      'P-005': [
+        { id_materia_prima: 'M-002', nome: 'Papelão Ondulado Duplo', quantidade_necessaria: 1.2, unidade: 'm²' },
+        { id_materia_prima: 'M-005', nome: 'Tinta Flexográfica', quantidade_necessaria: 0.3, unidade: 'litro' },
+        { id_materia_prima: 'M-004', nome: 'Cola Branca Industrial', quantidade_necessaria: 0.2, unidade: 'kg' },
+        { id_materia_prima: 'M-008', nome: 'Verniz Protetor', quantidade_necessaria: 0.15, unidade: 'litro' }
       ]
     };
     
@@ -60,9 +83,43 @@ const FichaTecnica = ({ id_produto }) => {
       unidade: materiaSelecionada.unidade_medida
     };
 
-    setFichaTecnica([...fichaTecnica, novoItem]);
+    if (editingIndex !== null) {
+      // Editando item existente
+      const novaFicha = [...fichaTecnica];
+      novaFicha[editingIndex] = novoItem;
+      setFichaTecnica(novaFicha);
+      setEditingIndex(null);
+      alert('Item atualizado com sucesso!');
+    } else {
+      // Adicionando novo item
+      setFichaTecnica([...fichaTecnica, novoItem]);
+      alert('Item adicionado à ficha técnica!');
+    }
+    
     setFormData({ id_materia_prima: '', quantidade_necessaria: '' });
-    alert('Item adicionado à ficha técnica!');
+  };
+
+  const handleEdit = (index) => {
+    const item = fichaTecnica[index];
+    setFormData({
+      id_materia_prima: item.id_materia_prima,
+      quantidade_necessaria: item.quantidade_necessaria
+    });
+    setEditingIndex(index);
+  };
+
+  const handleDelete = (index) => {
+    if (!window.confirm('Deseja remover este item da composição?')) {
+      return;
+    }
+    const novaFicha = fichaTecnica.filter((_, i) => i !== index);
+    setFichaTecnica(novaFicha);
+    alert('Item removido com sucesso!');
+  };
+
+  const handleCancelEdit = () => {
+    setFormData({ id_materia_prima: '', quantidade_necessaria: '' });
+    setEditingIndex(null);
   };
 
   return (
@@ -72,20 +129,63 @@ const FichaTecnica = ({ id_produto }) => {
       <div>
         <h4>Composição Atual:</h4>
         {fichaTecnica.length > 0 ? (
-          <ul>
-            {fichaTecnica.map((item, index) => (
-              <li key={index}>
-                {item.nome}: {item.quantidade_necessaria} {item.unidade}
-              </li>
-            ))}
-          </ul>
+          <table style={{ width: '100%', marginTop: '10px', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>
+                <th style={{ padding: '10px', textAlign: 'left' }}>Matéria-Prima</th>
+                <th style={{ padding: '10px', textAlign: 'left' }}>Quantidade</th>
+                <th style={{ padding: '10px', textAlign: 'left' }}>Unidade</th>
+                <th style={{ padding: '10px', textAlign: 'center' }}>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {fichaTecnica.map((item, index) => (
+                <tr key={index} style={{ borderBottom: '1px solid #dee2e6' }}>
+                  <td style={{ padding: '10px' }}>{item.nome}</td>
+                  <td style={{ padding: '10px' }}>{item.quantidade_necessaria}</td>
+                  <td style={{ padding: '10px' }}>{item.unidade}</td>
+                  <td style={{ padding: '10px', textAlign: 'center' }}>
+                    <button
+                      type="button"
+                      onClick={() => handleEdit(index)}
+                      style={{
+                        padding: '5px 10px',
+                        marginRight: '5px',
+                        backgroundColor: '#ffc107',
+                        color: '#000',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Editar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(index)}
+                      style={{
+                        padding: '5px 10px',
+                        backgroundColor: '#dc3545',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Remover
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         ) : (
           <p>Nenhum item na ficha técnica ainda.</p>
         )}
       </div>
 
       <div className="form-minimal" style={{ marginTop: '20px' }}>
-        <h4>Adicionar Item à Ficha Técnica</h4>
+        <h4>{editingIndex !== null ? 'Editar Item' : 'Adicionar Item à Ficha Técnica'}</h4>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="id_materia_prima">Matéria-Prima</label>
@@ -119,7 +219,37 @@ const FichaTecnica = ({ id_produto }) => {
             />
           </div>
 
-          <button type="submit">Adicionar à Ficha</button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button 
+              type="submit"
+              style={{
+                padding: '8px 16px',
+                backgroundColor: editingIndex !== null ? '#007bff' : '#28a745',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+            >
+              {editingIndex !== null ? 'Atualizar Item' : 'Adicionar à Ficha'}
+            </button>
+            {editingIndex !== null && (
+              <button 
+                type="button"
+                onClick={handleCancelEdit}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#6c757d',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
+              >
+                Cancelar
+              </button>
+            )}
+          </div>
         </form>
       </div>
     </div>
