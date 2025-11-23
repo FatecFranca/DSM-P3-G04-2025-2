@@ -95,6 +95,7 @@ O projeto foi publicado utilizando a plataforma Render, permitindo acesso online
 
 🛠️ Backend (API REST):
 ➤https://sistema-de-gestao-de-fabrica-de.onrender.com
+
 🌐 Frontend (aplicação web):
 ➤https://sistema-de-gestao-de-fabrica.onrender.com/
 
@@ -102,7 +103,9 @@ O projeto foi publicado utilizando a plataforma Render, permitindo acesso online
 
 O deploy foi separado em dois serviços independentes:
 
+
 1️⃣ Backend (Node + Express + MongoDB)
+
 
 Publicado como Web Service
 Porta obtida via variável de ambiente PORT
@@ -115,6 +118,7 @@ PORT=10000
 
 2️⃣ Frontend (React — Deploy Estático)
 
+
 Publicado como Static Site
 Build gerado com:
 npm run build
@@ -122,7 +126,9 @@ npm run build
 
 Diretório de publicação: build
 
+
 🔄 Regras SPA (React Router)
+
 
 No painel do Render → Static Site → Redirect Rules:
 
@@ -130,7 +136,9 @@ Source: /*
 Destination: /index.html
 Status: 200
 
+
 ▶️ Passo a Passo do Deploy
+
 
 🔧 Backend
 Acessar https://render.com
