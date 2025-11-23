@@ -85,6 +85,80 @@ npm run build
 
 Os arquivos otimizados serão gerados na pasta `build/`.
 
+
+
+☁️ Deploy no Render
+
+O projeto foi publicado utilizando a plataforma Render, permitindo acesso online ao backend e ao frontend sem necessidade de instalação local.
+
+🔗 URLs do Sistema
+
+🛠️ Backend (API REST):
+➤https://sistema-de-gestao-de-fabrica-de.onrender.com
+🌐 Frontend (aplicação web):
+➤https://sistema-de-gestao-de-fabrica.onrender.com/
+
+📦 Arquitetura do Deploy
+
+O deploy foi separado em dois serviços independentes:
+
+1️⃣ Backend (Node + Express + MongoDB)
+
+Publicado como Web Service
+Porta obtida via variável de ambiente PORT
+Integração com MongoDB Atlas
+Credenciais protegidas via Render Environment
+Exemplo de variáveis:
+MONGODB_URI=mongodb+srv://usuario:senha@cluster.mongodb.net/gestao_fabrica
+PORT=10000
+
+
+2️⃣ Frontend (React — Deploy Estático)
+
+Publicado como Static Site
+Build gerado com:
+npm run build
+
+
+Diretório de publicação: build
+
+🔄 Regras SPA (React Router)
+
+No painel do Render → Static Site → Redirect Rules:
+
+Source: /*
+Destination: /index.html
+Status: 200
+
+▶️ Passo a Passo do Deploy
+
+🔧 Backend
+Acessar https://render.com
+New + → Web Service
+Conectar repositório GitHub
+Configuração:
+Runtime: Node
+Build Command: npm install
+Start Command: npm start
+Branch: main
+Adicionar variáveis de ambiente:
+MONGODB_URI
+PORT
+Deploy automático ativo
+
+🔧 Frontend
+New + → Static Site
+Selecionar mesmo repositório
+Configuração:
+Build Command: npm run build
+Publish Directory: build/
+Adicionar regra de rewrite (SPA)
+
+⚠️ Observações Importantes
+Serviços gratuitos do Render hibernam após inatividade
+→ O primeiro acesso pode demorar ~30s
+Em erros de requisição CORS:
+Alterar origin no backend para o domínio real do frontend   
 ---
 
 ## 🏗️ Estrutura do Projeto
